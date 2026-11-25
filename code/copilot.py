@@ -206,6 +206,29 @@ def classify_llm(email, clean, root):
     raise ValueError("LLM output invalid after retry")
 
 
+def classify_openai(email, clean, root):
+    """OpenAI-compatible chat API (default Groq). Env: OPENAI_API_KEY, OPENAI_MODEL, optional OPENAI_BASE_URL."""
+    prompt = (root / "prompts" / "classify.md").read_text(encoding="utf-8")
+    base = os.environ.get("OPENAI_BASE_URL", "https://api.groq.com/openai/v1").rstrip("/")
+    body = {"model": os.environ["OPENAI_MODEL"], "temperature": 0, "max_tokens": 1500,
+            "messages": [{"role": "system", "content": prompt},
+                         {"role": "user", "content": "<email>\nFrom: {}\nSubject: {}\n\n{}\n</email>".format(
+                             email["from"]["email"], email["subject"], clean)}]}
+    req = urllib.request.Request(base + "/chat/completions", data=json.dumps(body).encode(),
+                                 headers={"Authorization": "Bearer " + os.environ["OPENAI_API_KEY"],
+                                          "Content-Type": "application/json", "User-Agent": "kesar-copilot/1.0"})
+    for attempt in range(2):  # one repair retry
+        with urllib.request.urlopen(req, timeout=60) as r:
+            txt = json.load(r)["choices"][0]["message"]["content"] or ""
+        try:
+            obj = json.loads(re.search(r"\{.*\}", txt, re.S).group(0))
+            if not validate(obj):
+                return obj
+        except Exception:
+            pass
+    raise ValueError("LLM output invalid after retry")
+
+
 # ----------------------------------------------------------------- policy checks
 def days_between(a, b):
     return (date.fromisoformat(b) - date.fromisoformat(a)).days
@@ -397,9 +420,9 @@ def process(email, orders, by_email, tickets, backend, root):
     if injected:
         notes.append("prompt-injection text removed and ignored")
     cls, flags = classify_heuristic(email, clean)
-    if backend == "anthropic":
+    if backend in ("anthropic", "openai"):
         try:
-            cls = classify_llm(email, clean, root)
+            cls = (classify_llm if backend == "anthropic" else classify_openai)(email, clean, root)
         except Exception as e:  # fall back, never drop the email
             error = f"llm_failed: {e}"
             notes.append("fell back to heuristic classifier")
@@ -534,7 +557,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", default="data")
     ap.add_argument("--out", default="output")
-    ap.add_argument("--llm", default="heuristic", choices=["heuristic", "anthropic"])
+    ap.add_argument("--llm", default="heuristic", choices=["heuristic", "anthropic", "openai"])
     ap.add_argument("--eval", default=None)
     a = ap.parse_args()
     run(Path(a.data), Path(a.out), a.llm, a.eval)
