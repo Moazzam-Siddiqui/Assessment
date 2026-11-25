@@ -134,6 +134,32 @@ def ticket_upsert(email, cls):
         w=csv.DictWriter(f,fieldnames=TICKET_FIELDS); w.writeheader(); w.writerows(rows)
     return tid
 
+def assess_return(email, order, cls):
+    """Policy screen uses received_at, never the host clock."""
+    if not order: return {"eligible":False,"reason":"Order not found; human review required."}
+    from datetime import date
+    try: received=date.fromisoformat((email.get("received_at","") or "")[:10])
+    except ValueError: return {"eligible":False,"reason":"Invalid received_at; human review required."}
+    body=(email.get("body","")).lower()
+    if cls["intent"]=="complaint":
+        if any(x in body for x in ["damaged","leak","cracked","wrong item","missing item"]):
+            try:
+                delivered=date.fromisoformat(order.get("delivered_date") or "")
+                in_window=0 <= (received-delivered).days <= 2
+            except ValueError: in_window=False
+            photos=bool(email.get("attachments"))
+            return {"eligible":in_window and photos,"reason":"Within 48 hours with photos" if in_window and photos else "Verify 48-hour window and photos; human review required."}
+        return {"eligible":False,"reason":"Complaint requires human review."}
+    try:
+        delivered=date.fromisoformat(order.get("delivered_date") or "")
+        days=(received-delivered).days
+    except ValueError: return {"eligible":False,"reason":"No confirmed delivery date; human review required."}
+    unopened=any(x in body for x in ["unopened","sealed","seal intact","never opened"])
+    opened=any(x in body for x in ["used","opened","didn't suit","did not suit","no difference","didn't see results"])
+    kit_ok="bridal glow kit" not in body or any(x in body for x in ["complete set","all seals","all components"])
+    eligible=0 <= days <= 7 and unopened and not opened and kit_ok
+    return {"eligible":eligible,"reason":"Within 7 days and sealed/unopened" if eligible else "Eligibility not established; human review required."}
+
 def process_email(email, prompt_version="v2"):
     cls,source=classify(email)
     # Received timestamp is the only date basis; fixed scenario date is included for agent.
