@@ -171,6 +171,8 @@ def process_email(email, prompt_version="v2"):
     action="log_only"; draft=""
     if cls["intent"] in ("return_refund","complaint"):
         ticket_id=ticket_upsert(email,cls); action="ticket_and_draft"
+        policy=assess_return(email,order,cls)
+        if not policy["eligible"]: needs_human=True
     elif cls["intent"] in ("order_status","product_query"):
         action="draft_reply"
     if cls["intent"]!="other":
