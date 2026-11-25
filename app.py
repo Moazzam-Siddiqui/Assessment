@@ -109,6 +109,16 @@ def agent_draft(email, extracted):
             response=client.chat.completions.create(model=os.getenv("OPENAI_MODEL","openai/gpt-oss-120b"),messages=msgs,tools=TOOLS,tool_choice="auto",temperature=0)
         raise RuntimeError("Tool-call limit exceeded")
     except Exception as exc:
+        # Print safe diagnostics for API failures without exposing credentials.
+        response_obj = getattr(exc, "response", None)
+        print("LLM/API error:", getattr(exc, "status_code", None), getattr(exc, "message", str(exc)))
+        if response_obj is not None:
+            safe_headers = {
+                key: value for key, value in response_obj.headers.items()
+                if key.lower().startswith(("x-ratelimit-", "retry-after", "cf-"))
+            }
+            if safe_headers:
+                print("LLM/API rate-limit headers:", safe_headers)
         return {"reply_draft":"A team member will review your message and follow up within 24 business hours.","needs_human":True,"rationale":f"Agent unavailable or failed: {type(exc).__name__}"}
 
 def ticket_upsert(email, cls):
