@@ -3,7 +3,7 @@
 ## 1. Summary
 
 - **What I built:** an order-support copilot pipeline: sanitize the email, classify it into the required JSON schema, look up the order (by ID, else sender email), apply policy checks in code, create or update tickets (no duplicates per order), draft a brand-voice reply, and write one audit row per email.
-- **Platform and LLM:** a Python (standard library only) reference implementation in `code/copilot.py`, plus an n8n blueprint in `workflow/`. The LLM path uses the Anthropic Messages API; the 25-email run below used the offline rule-based stand-in, not an LLM.
+- **Platform and LLM:** the assignment reference implementation is `code/copilot.py` (offline heuristic by default; optional Anthropic API path), with an n8n blueprint in `workflow/`. A separate `app.py` prototype uses the OpenAI-compatible Groq endpoint by default (`openai/gpt-oss-120b`). These are distinct implementations; the test results below apply only to `code/copilot.py`, not `app.py`.
 - **Time spent:** not tracked.
 - **What works:** all 25 emails run end to end and produce `output/audit_log.csv` and `output/tickets.csv` (9 tickets, E21 updates E04's ticket). Sender check, 7-day return and 48-hour damage logic, prompt-injection stripping, and the confidence threshold are all exercised.
 - **What doesn't (yet):** no real LLM run, so no LLM accuracy numbers and no v1 vs v2 comparison; no Google Sheet, screenshots or screen recording; the n8n JSON has never been imported into n8n. See `TEST_REPORT.md` section 5.
@@ -34,10 +34,11 @@ Screenshots are not included (`screenshots/` is empty): the workflow has not bee
 ## 3. Setup - how someone else can run this
 
 1. **Offline run (no accounts):** `python3 code/copilot.py --data data --out output --eval code/expected.json`. Python 3.9+; no packages.
-2. **LLM classification:** `export ANTHROPIC_API_KEY=...` (and optionally `KESAR_MODEL`), then add `--llm anthropic`. This path is written but untested.
-3. **n8n:** import `workflow/kesar_copilot_v2.n8n.json`, attach an HTTP header credential (`x-api-key`) and a Google Sheets credential, replace `<YOUR_SHEET_ID>` and the `raw.githubusercontent.com` URLs, paste the prompts from `prompts/`. The blueprint still needs a "Classify prompt" node and a final Code node that builds the audit row from the agent output.
-4. **Sheet:** import `templates/audit_log_template.csv` as "Audit Log" and `templates/tickets_template.csv` as "Tickets" (the offline run already writes both files in `output/`).
-5. **25 test emails:** the command in step 1 processes all of them; `scripts/send_test_emails.py` can post them to a webhook.
+2. **Reference implementation LLM classification:** `export ANTHROPIC_API_KEY=...` (and optionally `KESAR_MODEL`), then add `--llm anthropic`. This path is written but untested.
+3. **Separate Groq prototype (`app.py`):** install `requirements.txt`, set `OPENAI_API_KEY` to your Groq key (optionally set `OPENAI_MODEL`, default `openai/gpt-oss-120b`), then run `python app.py --batch data/test_emails.json --version v1`. This is a separate path from the assignment reference implementation and has not been runtime-tested against Groq.
+4. **n8n:** import `workflow/kesar_copilot_v2.n8n.json`, attach an HTTP header credential (`x-api-key`) and a Google Sheets credential, replace `<YOUR_SHEET_ID>` and the `raw.githubusercontent.com` URLs, paste the prompts from `prompts/`. The blueprint still needs a "Classify prompt" node and a final Code node that builds the audit row from the agent output.
+5. **Sheet:** import `templates/audit_log_template.csv` as "Audit Log" and `templates/tickets_template.csv` as "Tickets" (the offline run already writes both files in `output/`).
+6. **25 test emails:** the command in step 1 processes all of them; `scripts/send_test_emails.py` can post them to a webhook.
 
 No keys are stored anywhere in this repo.
 
