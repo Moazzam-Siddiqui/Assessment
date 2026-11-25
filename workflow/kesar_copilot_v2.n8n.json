@@ -1,0 +1,553 @@
+{
+  "name": "Kesar Support Copilot v2 (UNTESTED BLUEPRINT)",
+  "nodes": [
+    {
+      "id": "n1",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        300
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "kesar-support",
+        "responseMode": "onReceived"
+      }
+    },
+    {
+      "id": "n2",
+      "name": "Sanitize email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Untrusted input: strip paragraphs that try to instruct the system\nconst e = $input.first().json.body;\nconst re = /(system note|ignore (all )?(previous|prior) (instructions|policies)|note to (the )?ai|as an ai assistant|you are now)/i;\nconst parts = e.body.split(/\\n\\s*-{3,}\\s*\\n|\\n\\s*\\n/);\nconst kept = parts.filter(p => !re.test(p));\nreturn [{ json: { ...e, clean_body: kept.join('\\n\\n'), injection_suspected: kept.length !== parts.length } }];"
+      }
+    },
+    {
+      "id": "n3",
+      "name": "Classify (LLM)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({model:'claude-haiku-5-5',max_tokens:400,temperature:0,system:$('Classify prompt').first().json.prompt,messages:[{role:'user',content:'<email>\\nFrom: '+$json.from.email+'\\nSubject: '+$json.subject+'\\n\\n'+$json.clean_body+'\\n</email>'}]}) }}",
+        "options": {
+          "retry": {
+            "maxTries": 3,
+            "waitBetweenTries": 2000
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "Anthropic API (set in n8n, header x-api-key)"
+        }
+      }
+    },
+    {
+      "id": "n4",
+      "name": "Validate / repair JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Parse + validate LLM JSON against schemas/llm_output.schema.json; fall back safely (never drop the email)\nconst intents=['order_status','product_query','return_refund','complaint','other'];\nconst sent=['positive','neutral','negative','angry']; const langs=['en','hi','hinglish'];\nlet o, err='';\ntry { o = JSON.parse(($json.content[0].text.match(/\\{[\\s\\S]*\\}/)||[''])[0]); } catch(e){ err='unparseable'; }\nconst ok = o && intents.includes(o.intent) && (o.secondary_intent===null||intents.includes(o.secondary_intent))\n  && (o.order_id===null||/^KC-[0-9]{4}$/.test(o.order_id)) && sent.includes(o.sentiment) && langs.includes(o.language)\n  && typeof o.confidence==='number' && o.confidence>=0 && o.confidence<=1 && typeof o.summary==='string' && o.summary.length<=200;\nconst src = $('Sanitize email').first().json;\nif (!ok) o = {intent:'other',secondary_intent:null,order_id:null,sentiment:'neutral',language:'en',confidence:0,summary:'Classification failed',injection_suspected:false};\nreturn [{ json: { ...src, cls:o, error: ok?'':(err||'schema_invalid'),\n  needs_human: !ok || o.confidence < 0.70 || o.sentiment==='angry' || src.injection_suspected || o.injection_suspected===true } }];"
+      }
+    },
+    {
+      "id": "n5",
+      "name": "Load orders.json",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        160
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "https://raw.githubusercontent.com/<your-user>/<your-repo>/main/data/orders.json"
+      }
+    },
+    {
+      "id": "n6",
+      "name": "Order lookup + sender check",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Order lookup: by order_id, else by sender email. Sender must equal customer_email to share details.\nconst orders = $('Load orders.json').first().json.orders;\nconst j = $input.first().json; const sender = j.from.email.toLowerCase();\nlet order = j.cls.order_id ? orders.find(o=>o.order_id===j.cls.order_id) : orders.find(o=>o.customer_email.toLowerCase()===sender);\nconst found = !!order; const mismatch = found && order.customer_email.toLowerCase()!==sender;\nreturn [{ json: { ...j, order_found: found, privacy_mismatch: mismatch, order: mismatch?null:order } }];"
+      }
+    },
+    {
+      "id": "n7",
+      "name": "Policy checks",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Deterministic policy checks (not left to the LLM). 'today' = received_at date, never the system clock.\nconst j=$input.first().json; if(!j.order) return [{json:{...j, eligibility:null}}];\nconst days=(a,b)=>Math.round((new Date(b)-new Date(a))/86400000);\nconst rd=j.received_at.slice(0,10); const t=(j.clean_body||'').toLowerCase();\nconst delivered=j.order.status==='delivered';\nconst d=delivered?days(j.order.delivered_date,rd):null;\nconst used=/used (them|it)|have been using|didn't suit|no difference/.test(t)&&!/unopened|never opened|seal/.test(t);\nconst unopened=/unopened|never opened|sealed|seals? intact/.test(t);\nreturn [{json:{...j, eligibility:{delivered, days_since_delivery:d, within_7_days:delivered&&d<=7,\n  within_48h:delivered&&d<=2, used, unopened, eligible:delivered&&d<=7&&!used&&unopened}}}];"
+      }
+    },
+    {
+      "id": "n8",
+      "name": "Route by intent",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        1320,
+        300
+      ],
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "outputKey": "order_status",
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.cls.intent}}",
+                    "rightValue": "order_status",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "outputKey": "product_query",
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.cls.intent}}",
+                    "rightValue": "product_query",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "outputKey": "return_refund",
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.cls.intent}}",
+                    "rightValue": "return_refund",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "outputKey": "complaint",
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.cls.intent}}",
+                    "rightValue": "complaint",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      }
+    },
+    {
+      "id": "n9",
+      "name": "Find open ticket for order",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1560,
+        420
+      ],
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "<YOUR_SHEET_ID>"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Tickets"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "order_id",
+              "lookupValue": "={{$json.order.order_id}}"
+            },
+            {
+              "lookupColumn": "status",
+              "lookupValue": "Open"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets (set in n8n)"
+        }
+      }
+    },
+    {
+      "id": "n10",
+      "name": "Create or update ticket",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1780,
+        420
+      ],
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "<YOUR_SHEET_ID>"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Tickets"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "matchingColumns": [
+            "ticket_id"
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets (set in n8n)"
+        }
+      }
+    },
+    {
+      "id": "n11",
+      "name": "Reply drafting agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1560,
+        240
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ 'Classification: '+JSON.stringify($json.cls)+'\\nEligibility (computed): '+JSON.stringify($json.eligibility)+'\\nSender: '+$json.from.email+'\\nEmail:\\n'+$json.clean_body }}",
+        "options": {
+          "systemMessage": "<paste prompts/agent_system.md>",
+          "maxIterations": 4
+        }
+      }
+    },
+    {
+      "id": "n12",
+      "name": "Tool: get_order",
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.1,
+      "position": [
+        1500,
+        60
+      ],
+      "parameters": {
+        "name": "get_order",
+        "description": "Look up an order by order_id or customer email. Returns the order or 'not found'.",
+        "jsCode": "const orders = $('Load orders.json').first().json.orders;\nconst q=(query||'').trim();\nconst o=orders.find(x=>x.order_id===q||x.customer_email.toLowerCase()===q.toLowerCase());\nreturn o?JSON.stringify(o):'not found';"
+      }
+    },
+    {
+      "id": "n13",
+      "name": "Tool: search_faq",
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.1,
+      "position": [
+        1700,
+        60
+      ],
+      "parameters": {
+        "name": "search_faq",
+        "description": "Search the company FAQ (only source of truth for policy and product answers).",
+        "jsCode": "const faq = $('Load faq.md').first().json.data;\nconst words=(query||'').toLowerCase().split(/\\W+/).filter(w=>w.length>3);\nconst secs=faq.split(/\\n(?=## )/);\nconst hits=secs.filter(s=>words.some(w=>s.toLowerCase().includes(w)));\nreturn hits.length?hits.join('\\n\\n'):'no matching FAQ passage';"
+      }
+    },
+    {
+      "id": "n14",
+      "name": "Load faq.md",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1500,
+        -100
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "https://raw.githubusercontent.com/<your-user>/<your-repo>/main/data/faq.md"
+      }
+    },
+    {
+      "id": "n15",
+      "name": "Write Audit Log row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2000,
+        300
+      ],
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "<YOUR_SHEET_ID>"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Audit Log"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData"
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets (set in n8n)"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Sanitize email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sanitize email": {
+      "main": [
+        [
+          {
+            "node": "Classify (LLM)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify (LLM)": {
+      "main": [
+        [
+          {
+            "node": "Validate / repair JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate / repair JSON": {
+      "main": [
+        [
+          {
+            "node": "Load orders.json",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load orders.json": {
+      "main": [
+        [
+          {
+            "node": "Order lookup + sender check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Order lookup + sender check": {
+      "main": [
+        [
+          {
+            "node": "Policy checks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Policy checks": {
+      "main": [
+        [
+          {
+            "node": "Route by intent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find open ticket for order": {
+      "main": [
+        [
+          {
+            "node": "Create or update ticket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create or update ticket": {
+      "main": [
+        [
+          {
+            "node": "Reply drafting agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply drafting agent": {
+      "main": [
+        [
+          {
+            "node": "Write Audit Log row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by intent": {
+      "main": [
+        [
+          {
+            "node": "Reply drafting agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reply drafting agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Find open ticket for order",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Find open ticket for order",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Write Audit Log row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: get_order": {
+      "ai_tool": [
+        [
+          {
+            "node": "Reply drafting agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: search_faq": {
+      "ai_tool": [
+        [
+          {
+            "node": "Reply drafting agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "note": "Generated without access to an n8n instance; import, attach credentials, replace <placeholders>, then run. Needs a 'Classify prompt' Set node or inline the prompt, and a Code node after the agent that builds the audit row (see README section 2)."
+  }
+}
