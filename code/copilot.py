@@ -41,7 +41,7 @@ SIGN = "Warm regards,\nTeam Kesar"
 
 # ----------------------------------------------------------------- helpers
 def fmt_date(s):
-    return datetime.strptime(s, "%Y-%m-%d").strftime("%-d %b %Y")
+    d = datetime.strptime(s, "%Y-%m-%d"); return f"{d.day} {d:%b %Y}"
 
 
 def inr(n):
@@ -185,7 +185,7 @@ def validate(obj):
 
 def classify_llm(email, clean, root):
     """Anthropic Messages API classifier. Not exercised in the offline run (needs a key)."""
-    prompt = (root / "prompts" / "classify.md").read_text()
+    prompt = (root / "prompts" / "classify.md").read_text(encoding="utf-8")
     body = {"model": os.environ.get("KESAR_MODEL", "claude-haiku-5-5"), "max_tokens": 400, "temperature": 0,
             "system": prompt,
             "messages": [{"role": "user", "content":
@@ -496,10 +496,10 @@ def process(email, orders, by_email, tickets, backend, root):
 
 def run(data, out, backend, expected):
     root = Path(__file__).resolve().parent.parent
-    orders_raw = json.loads((data / "orders.json").read_text())["orders"]
+    orders_raw = json.loads((data / "orders.json").read_text(encoding="utf-8"))["orders"]
     orders = {o["order_id"]: o for o in orders_raw}
     by_email = {o["customer_email"].lower(): o for o in orders_raw}
-    emails = json.loads((data / "test_emails.json").read_text())["emails"]
+    emails = json.loads((data / "test_emails.json").read_text(encoding="utf-8"))["emails"]
     tickets, rows = Tickets(), []
     for e in emails:
         row, _ = process(e, orders, by_email, tickets, backend, root)
@@ -512,7 +512,7 @@ def run(data, out, backend, expected):
             w.writerows(data_rows)
     print(f"{len(rows)} emails processed, {len(tickets.rows)} tickets -> {out}")
     if expected:
-        exp = json.loads(Path(expected).read_text())
+        exp = json.loads(Path(expected).read_text(encoding="utf-8"))
         ok_i = ok_h = ok_t = ok_a = 0
         for r in rows:
             x = exp[r["email_id"]]

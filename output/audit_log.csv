@@ -6,25 +6,25 @@ Your order KC-1041 (Saffron Glow Face Serum 30 ml) has been shipped with SwiftSh
 If it has not arrived by then, just reply to this email and we will look into it.
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,
 E02,2026-11-20T09:15:00+05:30,ishita.banerjee@example.com,product_query,,,en,neutral,0.9,no,draft_reply,FALSE,,"Hi Ishita,
 
 Yes, the Saffron Glow Face Serum is lightweight and non-greasy, and it is suitable for all skin types, including oily skin. It is also vegan, so it fits your switch. You can use it morning and night after cleansing, and we always suggest a patch test (inner forearm, 24 hours) before first use.
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,
 E03,2026-11-20T09:28:00+05:30,kavya.reddy@example.com,return_refund,,KC-1047,en,negative,0.92,yes,ticket_created+draft_reply,FALSE,TKT-001,"Hi Kavya,
 
 Your order KC-1047 was delivered on 16 Nov 2026, which is within our 7-day return window, so we can arrange a free reverse pickup within 2-3 business days, provided the items are unused, unopened and sealed. Your refund goes to the original payment method within 5-7 business days after the returned item passes quality check. The ₹79 shipping fee is non-refundable.
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,eligibility: 4 days since delivery (within 7-day window); customer states unopened/sealed (to be confirmed at pickup QC)
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,eligibility: 4 days since delivery (within 7-day window); customer states unopened/sealed (to be confirmed at pickup QC)
 E04,2026-11-20T09:41:00+05:30,tanvi.desai@example.com,complaint,,KC-1052,en,negative,0.93,yes,ticket_created+draft_reply+needs_human,TRUE,TKT-002,"Hi Tanvi,
 
 I'm sorry about this. Regarding order KC-1052 and the damaged/leaking item: Please reply with photos of the product and the outer box. Once verified, we can send a free replacement or give you a full refund, your choice. A team member will follow up within 24 business hours.
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,report window <=48h: True; photos attached: False
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,report window <=48h: True; photos attached: False
 E05,2026-11-20T10:03:00+05:30,priya.sharma@example.com,order_status,,KC-1043,hinglish,neutral,0.9,yes,draft_reply,FALSE,,"Hi Priya,
 
 Aapka order KC-1043 (Aloe Calm Gel 150 g) SwiftShip ke saath shipped ho chuka hai aur estimated delivery 23 Nov 2026 hai. Tracking link: https://track.example.com/SS7781043
@@ -32,26 +32,26 @@ Aapka order KC-1043 (Aloe Calm Gel 150 g) SwiftShip ke saath shipped ho chuka ha
 Yeh ek estimate hai, isliye exact din ka pakka wada hum nahi kar sakte. Agar aapke travel se pehle order na pahunche, to is email par reply kijiye, hum madad karenge.
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,
-E06,2026-11-20T10:17:00+05:30,promo@seo-rankers-pro.example,other,,,en,neutral,0.95,no,log_only,FALSE,,,v2,2026-11-25T12:20:52+00:00,,
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,
+E06,2026-11-20T10:17:00+05:30,promo@seo-rankers-pro.example,other,,,en,neutral,0.95,no,log_only,FALSE,,,v2,2026-11-25T13:03:48+00:00,,
 E07,2026-11-20T10:34:00+05:30,arjun.nair@example.com,order_status,,KC-1046,en,neutral,0.9,yes,draft_reply+needs_human,TRUE,,"Hi Arjun,
 
 Thank you for reaching out. To protect our customers' privacy, we can only share order details (including tracking links and delivery addresses) with the email address used to place the order, so I'm not able to share them here. The person who placed the order can write to us from that address, or check the tracking email we send when an order is dispatched.
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,sender email does not match order owner; no order details shared; privacy check failed
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,sender email does not match order owner; no order details shared; privacy check failed
 E08,2026-11-20T10:52:00+05:30,riya.kapoor@example.com,complaint,return_refund,KC-1051,en,angry,0.93,yes,ticket_created+draft_reply+needs_human,TRUE,TKT-003,"Hi Riya,
 
 I'm really sorry about this experience, and I understand how frustrating it is. Regarding order KC-1051 and the damaged/leaking item: Please reply with photos of the product and the outer box. Once verified, we can send a free replacement or give you a full refund, your choice. A team member will follow up within 24 business hours.
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,report window <=48h: True; photos attached: False
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,report window <=48h: True; photos attached: False
 E09,2026-11-20T11:10:00+05:30,bhaskar.das@example.com,product_query,,,hi,neutral,0.9,no,draft_reply,FALSE,,"नमस्ते भास्कर जी,
 
 गुवाहाटी (नॉर्थ-ईस्ट) के लिए ऑर्डर आम तौर पर 1-2 कार्य दिवस में डिस्पैच होता है और उसके बाद डिलीवरी में 6-8 कार्य दिवस लगते हैं। Bridal Glow Kit (₹3,499) पर कैश ऑन डिलीवरी उपलब्ध है, क्योंकि COD ₹5,000 तक के ऑर्डर पर मिलता है; इसमें ₹49 का COD हैंडलिंग शुल्क लगता है जो रिफंड नहीं होता। ₹999 या उससे अधिक के ऑर्डर पर शिपिंग मुफ़्त है।
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,
 E10,2026-11-20T11:26:00+05:30,vikram.singh@example.com,order_status,,KC-1044,en,neutral,0.9,yes,draft_reply,FALSE,,"Hi Vikram,
 
 Your order KC-1044 (2x Bhringraj Hair Oil 200 ml) has been shipped with BharatExpress and is estimated to be delivered by 25 Nov 2026. You can track it here: https://track.example.com/BX5521044
@@ -59,89 +59,89 @@ Your order KC-1044 (2x Bhringraj Hair Oil 200 ml) has been shipped with BharatEx
 If it has not arrived by then, just reply to this email and we will look into it.
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,order KC-1044 found via sender email
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,order KC-1044 found via sender email
 E11,2026-11-20T11:48:00+05:30,sneha.joshi@example.com,return_refund,,KC-1048,en,negative,0.92,yes,ticket_created+draft_reply,FALSE,TKT-004,"Hi Sneha,
 
 Your order KC-1048 was delivered on 15 Nov 2026, which is within our 7-day return window, so we can arrange a free reverse pickup within 2-3 business days, provided the items are unused, unopened and sealed. Since it is a kit, it needs to be returned as a complete set. Your refund goes to the original payment method within 5-7 business days after the returned item passes quality check.
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,eligibility: 5 days since delivery (within 7-day window); customer states unopened/sealed (to be confirmed at pickup QC)
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,eligibility: 5 days since delivery (within 7-day window); customer states unopened/sealed (to be confirmed at pickup QC)
 E12,2026-11-20T12:05:00+05:30,manish.gupta@example.com,return_refund,,KC-1055,en,negative,0.92,yes,ticket_created+draft_reply+needs_human,TRUE,TKT-005,"Hi Manish,
 
 I'm sorry the product did not work out for you. Returns are accepted within 7 days of delivery and only for unused, unopened products; for hygiene reasons we cannot take back opened or used items, including cases where a product did not suit or show results. Order KC-1055 was delivered on 12 Nov 2026 and has been used, so it does not qualify. A team member will review your request and follow up within 24 business hours.
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,prompt-injection text removed and ignored; eligibility: 8 days since delivery (outside 7-day window); customer says product was used
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,prompt-injection text removed and ignored; eligibility: 8 days since delivery (outside 7-day window); customer says product was used
 E13,2026-11-20T12:31:00+05:30,accounts@brightdesigns.example,other,,,en,neutral,0.85,no,draft_reply+needs_human,TRUE,,"Hi Accounts,
 
 Thank you for writing in. We have passed your GST invoice request to a team member, who will follow up within 24 business hours.
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,not covered by faq.md
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,not covered by faq.md
 E14,2026-11-20T12:57:00+05:30,karan.malhotra@example.com,complaint,return_refund,KC-1053,en,negative,0.93,yes,ticket_created+draft_reply+needs_human,TRUE,TKT-006,"Hi Karan,
 
 I'm sorry about this. Regarding order KC-1053 and the wrong item: Please reply with photos of the product and the outer box. Once verified, we can send a free replacement or give you a full refund, your choice, and we will arrange pickup of the wrong item. A team member will follow up within 24 business hours.
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,report window <=48h: True; photos attached: False
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,report window <=48h: True; photos attached: False
 E15,2026-11-20T13:20:00+05:30,rohit.mehta@example.com,order_status,,KC-1042,en,neutral,0.9,yes,draft_reply,FALSE,,"Hi Rohit,
 
 Your order KC-1042 is out for delivery with BharatExpress (estimated delivery 20 Nov 2026). As this is a cash on delivery order, the amount payable is ₹1,897 (including the ₹49 COD handling fee). Delivery partners may not carry change, so please keep exact change ready. Tracking: https://track.example.com/BX5521042
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,
 E16,2026-11-20T13:44:00+05:30,aditya.verma@example.com,return_refund,complaint,KC-1049,en,negative,0.92,yes,ticket_created+draft_reply+needs_human,TRUE,TKT-007,"Hi Aditya,
 
 I'm sorry the product did not work out for you. Returns are accepted within 7 days of delivery and only for unused, unopened products; for hygiene reasons we cannot take back opened or used items, including cases where a product did not suit or show results. Order KC-1049 was delivered on 5 Nov 2026 and has been used, so it does not qualify. A team member will review your request and follow up within 24 business hours.
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,eligibility: 15 days since delivery (outside 7-day window); customer says product was used
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,eligibility: 15 days since delivery (outside 7-day window); customer says product was used
 E17,2026-11-20T14:09:00+05:30,collab@glowwithmira.example,other,,,en,neutral,0.9,no,draft_reply,FALSE,,"Hi Mira,
 
 Thank you for your interest in Kesar & Co. For collaboration and partnership enquiries, please write to partnerships@kesarandco.example and the team will take it from there.
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,
 E18,2026-11-20T14:30:00+05:30,rahul.b@example.com,order_status,,,en,negative,0.55,no,draft_reply+needs_human,TRUE,,"Hi Rahul,
 
 Thank you for writing in. We could not find an order linked to this email address. Could you reply with your order number (it looks like KC-1234) and the email address used while ordering? A team member will follow up within 24 business hours.
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,confidence 0.55 below 0.7; no order ID and sender email matches no order
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,confidence 0.55 below 0.7; no order ID and sender email matches no order
 E19,2026-11-20T14:52:00+05:30,farhan.sheikh@example.com,return_refund,,KC-1050,en,negative,0.92,yes,ticket_created+draft_reply,FALSE,TKT-008,"Hi Farhan,
 
 Your order KC-1050 was delivered on 17 Nov 2026, which is within our 7-day return window, so we can arrange a free reverse pickup within 2-3 business days, provided the items are unused, unopened and sealed. Because this was a cash on delivery order, the refund goes to you by UPI or bank transfer; we will ask for your UPI ID (or account details) once the pickup is completed. The ₹49 COD fee is non-refundable.
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,eligibility: 3 days since delivery (within 7-day window); customer states unopened/sealed (to be confirmed at pickup QC)
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,eligibility: 3 days since delivery (within 7-day window); customer states unopened/sealed (to be confirmed at pickup QC)
 E20,2026-11-20T15:14:00+05:30,lakshmi.n@example.com,product_query,,,en,neutral,0.9,no,draft_reply+needs_human,TRUE,,"Hi Lakshmi,
 
 I'm sorry to hear eczema has been so persistent. Our products are cosmetics, not medicines, so we cannot say that Kumkumadi Night Oil will treat or cure eczema or any skin condition. For a condition like eczema, please consult a dermatologist before using it, and always do a patch test (inner forearm, 24 hours) first. A team member will follow up within 24 business hours.
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,
 E21,2026-11-20T15:55:00+05:30,tanvi.desai@example.com,complaint,return_refund,KC-1052,en,negative,0.93,yes,ticket_updated+draft_reply+needs_human,TRUE,TKT-002,"Hi Tanvi,
 
 I'm sorry about this. Regarding order KC-1052 and the damaged/leaking item: Thank you for the photos. Our team will verify them and arrange your replacement; a team member will follow up within 24 business hours.
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,report window <=48h: True; photos attached: True
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,report window <=48h: True; photos attached: True
 E22,2026-11-20T16:20:00+05:30,neha.kulkarni@example.com,order_status,,KC-1099,en,neutral,0.9,no,draft_reply+needs_human,TRUE,,"Hi Neha,
 
 Thank you for writing in. We could not find order KC-1099 linked to this email address. Could you reply with your order number (it looks like KC-1234) and the email address used while ordering? A team member will follow up within 24 business hours.
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,order not found
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,order not found
 E23,2026-11-20T16:47:00+05:30,pooja.nair@example.com,complaint,return_refund,KC-1054,en,negative,0.93,yes,ticket_created+draft_reply+needs_human,TRUE,TKT-009,"Hi Pooja,
 
 I'm sorry about this. Regarding order KC-1054 and the missing item: Please reply with photos of the product(s) and the outer box. We will verify against our packing weight record and then either ship the missing item or refund its value, whichever you prefer. A team member will follow up within 24 business hours.
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,report window <=48h: True; photos attached: False
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,report window <=48h: True; photos attached: False
 E24,2026-11-20T17:15:00+05:30,deepak.rao@example.com,order_status,,KC-1045,en,neutral,0.9,yes,draft_reply,FALSE,,"Hi Deepak,
 
 I'm sorry for the confusion. Order KC-1045 was cancelled on 16 Nov 2026 because of: out of stock at warehouse, which is why no tracking link was issued. A refund of ₹828 was initiated to your original payment method on 16 Nov 2026, and prepaid refunds reach you within 5-7 business days.
 
 Warm regards,
-Team Kesar",v2,2026-11-25T12:20:52+00:00,,
-E25,2026-11-20T17:48:00+05:30,simran.kaur@example.com,other,,,en,positive,0.9,no,log_only,FALSE,,,v2,2026-11-25T12:20:52+00:00,,
+Team Kesar",v2,2026-11-25T13:03:48+00:00,,
+E25,2026-11-20T17:48:00+05:30,simran.kaur@example.com,other,,,en,positive,0.9,no,log_only,FALSE,,,v2,2026-11-25T13:03:48+00:00,,
