@@ -4,6 +4,8 @@
 **Platform used:** Python reference implementation (`code/copilot.py`) plus an untested n8n blueprint (`workflow/`)
 **LLM(s) used:** none in the results below. The classifier in this run is a rule-based stand-in; the Anthropic API path exists in the code but was not exercised.
 
+**Scope note:** this report documents the offline run of `code/copilot.py` only. It does not validate the separate Groq-based `app.py` prototype, and no Groq API execution is claimed.
+
 > **Read this first.** The numbers below come from running the deterministic pipeline (sanitizer, order lookup,
 > sender check, policy checks, ticket dedup, reply templates) over all 25 emails. The classifier was a hand-written
 > rule set that I tuned while looking at these same 25 emails, so **25/25 here is a sanity check of the pipeline,
