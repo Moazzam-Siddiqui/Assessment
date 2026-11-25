@@ -199,7 +199,10 @@ def append_csv(path,fields,row):
         w.writerow(row)
 
 def run_batch(path,version="v2"):
-    emails=json.loads(Path(path).read_text())
+    payload=json.loads(Path(path).read_text())
+    emails=payload.get("emails", payload) if isinstance(payload,dict) else payload
+    if not isinstance(emails,list):
+        raise ValueError("Batch input must be a list of emails or an object with an emails list")
     results=[process_email(e,version) for e in emails]
     print(json.dumps({"processed":len(results),"needs_human":sum(bool(r["needs_human"]) for r in results),"tickets":sum(bool(r["ticket_id"]) for r in results),"audit":"audit_log.csv","ticket_file":"tickets.csv"},indent=2))
 
